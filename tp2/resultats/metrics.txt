@@ -1,0 +1,6 @@
+Accuracy: 77.8
+F1-macro: 0.709
+F1-weighted: 0.776
+Top1: tenure
+Top2: InternetService_Fiber optic
+Top3: Contract_Two year
