@@ -1,0 +1,45 @@
+=== RÉPONSES AUX QUESTIONS - TP3 ZALANDO ===
+
+--- ÉTAPE 1 : EXPLORATION ---
+1. Équilibre : Oui, le catalogue est parfaitement équilibré (6000 images par classe). Cela évite que le modèle ne devienne "paresseux" en prédisant toujours la classe majoritaire.
+2. Confusion Pull/Chemise : Oui, le risque est élevé car les silhouettes sont proches. Le modèle devra apprendre des détails fins (boutons, col) pour les distinguer.
+3. Résolution : 28x28 est suffisant pour ce TP mais pas pour la production réelle. Chez Zalando, on utiliserait des résolutions bien plus hautes (ex: 512x512) pour capturer les textures et les détails des produits.
+
+--- ÉTAPE 2 : PRÉTRAITEMENT ---
+1. Pourquoi normaliser ? Pour stabiliser les gradients. Si les valeurs sont entre 0 et 255, les poids du réseau risquent d'exploser ou de rendre l'apprentissage très lent. Entre 0 et 1, la convergence est plus fluide.
+
+--- ÉTAPE 3 : RANDOM FOREST ---
+1. Objectif Business (< 5% d'erreur) : Non, le Random Forest plafonne généralement autour de 87-88% de précision (12% d'erreur). Il ne suffit pas pour passer sous les 5%.
+2. Pixels indépendants : Le Random Forest ne comprend pas la structure spatiale. Pour lui, le pixel (14,14) n'a pas de lien particulier avec le pixel (14,15).
+
+--- ÉTAPE 4 : RÉSEAU DENSE (MLP) ---
+1. Paramètres : Environ 110 000 paramètres. C'est bien plus que les 784 pixels de l'image.
+2. Softmax : Elle transforme les scores de sortie en probabilités (0 à 1) dont la somme fait 100%. C'est idéal pour choisir la classe la plus probable.
+3. Loss function : On utilise la Crossentropy car elle pénalise fortement les erreurs de classification avec une grande confiance.
+
+--- ÉTAPE 5 : CNN ---
+1. 26x26 : Un filtre 3x3 sur une image 28x28 perd 1 pixel de chaque côté car il ne peut pas "déborder" de l'image (sans padding).
+2. MaxPooling : Il réduit la dimensionnalité tout en gardant les caractéristiques les plus fortes. Cela rend le modèle plus robuste aux petits décalages de l'objet dans l'image.
+3. Dropout : Il empêche le réseau de trop compter sur certains neurones spécifiques, ce qui le force à apprendre des représentations plus robustes (anti-overfitting).
+
+--- ÉTAPE 6 : COURBES D'APPRENTISSAGE ---
+1. Diagnostic : Si l'écart entre Train et Validation grandit, il y a overfitting. Le CNN est généralement plus stable grâce au Dropout.
+
+--- ÉTAPE 7 : COMPARAISON ET DÉCISION ---
+1. Modèle gagnant : Le CNN est le seul capable de s'approcher ou d'atteindre les 95% d'accuracy (soit < 5% d'erreur).
+2. Confusions : Les vêtements "de haut" (T-shirt, Pull, Chemise, Manteau) sont les plus confondus.
+3. Recall/Precision : Il faut regarder le Recall par catégorie. Si on rate 20% des robes, c'est un problème, même si l'accuracy globale est bonne.
+
+--- ÉTAPE 8 : ANALYSE DES ERREURS ---
+1. Visuel : Les erreurs sont souvent compréhensibles (ex: une basket confondue avec une bottine).
+2. Confiance : Une erreur à haute confiance est dangereuse car elle signifie que le modèle "croit" avoir raison alors qu'il se trompe lourdement.
+3. Solution : Utiliser un seuil de confiance. Si le modèle est sûr à moins de 70%, on envoie l'image à un expert humain.
+
+--- ÉTAPE 9 : FILTRES ---
+1. Détection : Les premiers filtres détectent des contours simples (horizontaux, verticaux) et des zones de contraste.
+2. Éthique : Les visualisations montrent que le modèle se base sur la forme du produit et non sur le fond, ce qui est rassurant.
+
+--- ÉTAPE 10 : INSIGHTS ---
+1. Le Deep Learning (CNN) est indispensable pour traiter les images car il préserve la structure spatiale.
+2. L'overfitting est le principal ennemi ; le Dropout et la validation croisée sont essentiels.
+3. La performance pure (accuracy) doit être complétée par une analyse de confiance pour une mise en production sécurisée.
